@@ -6,14 +6,15 @@ module.exports.signup_get = (req, res) => {
 }
 
 //since we have asynchronous code(User.create), whole func has to be async
-//User.create(creates an instance of model) takes time(async) so we add await keyword b4 it
-//Prevent varName 'user' from being filled with the Promise,we wait for it to resolve
+//User.create(creates local instance of model then saves to db) takes time(async),so add await keyword
+//this prevents varName 'user' from being filled with Promise as we wait for it to resolve
 //Passwords NEVER stored plainly in db..we'll learn hashing later
 module.exports.signup_post = async (req, res) => {
     //destructuring
     const { email, password } = req.body;
     //console.log(email, password)
     try {
+        //User.create creates local instance b4 saving
         const user = await User.create({ email, password })
         res.status(201).json(user)//once resolved converted to json
     } catch (err) {
