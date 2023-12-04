@@ -1,4 +1,29 @@
-<% -include('partials/header'); -%>
-<h2>Signup</h2>
+<% -include("partials/header"); -%>
+<!-- type text not email to prevent fronted validation but server 
+    <div> to show the error mssg 
+    type="password" to show dots when typing
+    <btn> inside form is an automatic submit event when clicked
+-->
+
+<form>
+    <h2>Sign up</h2>
+    <label for="email">Email:</label>
+    <input type="text" name="email" required/>
+    <div class="email error"></div>
+    <label for="email">Password:</label>
+    <input type="password" name="password" required/>
+    <div class="password error"></div>
+    <button>Signup</button>
+</form>
+<script>
+    const form = document.querySelector('form')
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault()
+        const email = form.email.value;
+        const password = form.password.value;
+        console.log(email, password)
+    })
+</script>
 
 <%- include('partials/footer'); -%>
