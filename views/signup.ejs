@@ -17,9 +17,16 @@
 </form>
 <script>
     const form = document.querySelector('form')
+    //divs where we'll display errors 
+    const emailError = document.querySelector('.email.error')
+    const passwordError = document.querySelector('.password.error')
 
     form.addEventListener('submit', async(e) => {
-        e.preventDefault()
+        e.preventDefault()  
+        //any errors displayed should be removed when submit pressed
+        emailError.textContent = '';
+        passwordError.textContent = '';
+
         const email = form.email.value;
         const password = form.password.value;
         // console.log(email, password)
@@ -32,6 +39,19 @@
                 body: JSON.stringify({ email, password}),
                 headers: {'Content-Type': 'application/json'}
             })
+            //get data back as js obj from the response obj(async)
+            const data = await result.json();//check authController(signup_post)for data returned
+            console.log(data, result) //data either userid or errors
+            if(data.errors){ 
+                //display errors in div
+                emailError.textContent = data.errors.email;
+                passwordError.textContent = data.errors.password;
+            }
+            //if signup success...redirect to homepage
+            if(data.user){//the user id
+                location.assign('/')
+            }
+            
         } catch (err) {
             console.log(err)
         }
