@@ -3,16 +3,13 @@ const { isEmail } = require('validator')
 const bcrypt = require('bcrypt')
 
 const userSchema = new mongoose.Schema({
-    //custom error handling..using arrays
-    //if 1st array element negated, output 2nd element
+
     email: {
         type: String,
         required: [true, 'Please enter an email'],
-        unique: true,   //unique not custom handled(check controller)
+        unique: true,  
         lowecase: true,
-        //to validate email, array has func(can take regex to check) and Str if test failed
-        // validate: [()=> {}, 'Email is not valid']
-        validate: [isEmail, 'Email is not valid']//alternative to func is validator pkg methods
+        validate: [isEmail, 'Email is not valid']
     },
     password: {
         type: String,
@@ -22,34 +19,34 @@ const userSchema = new mongoose.Schema({
 })
 
 //MONGOOSE HOOKS
-//these are special funcs triggered by mongoose events(eg save) 
-//arr func not used to allow usage of 'this'
-//'this' obtains local instance of model b4saving to db
-//all custom middleware use next() to prevent blocking
-/*
-userSchema.pre('save', function(next) {
-    console.log('user to be created and saved', this);
-    next();//to prevent loading after firing
-}) 
-*/
-
-//using bcrypt(3rs party pkg) to encrypt passwords
-//encryption is of 2 processes
-//(i) adding salt(extra text b4 hashing making it harder to decrypt) ie test123 -> haBz6test123 
-//(ii) hashing(making it jumbled)
-//using 'this.password' to take password from local instance obj b4 saving and hash it
 userSchema.pre('save', async function(next) {
-    const salt = await bcrypt.genSalt(); //generate salt to add to password(async)
-    this.password = await bcrypt.hash(this.password, salt) //add salt & hash(async)
-    next();//to prevent loading after firing
+    const salt = await bcrypt.genSalt(); 
+    this.password = await bcrypt.hash(this.password, salt) 
+    next();
 })
 
 //post to mean after saving
-//we now have doc in db so func takes 2 args
 userSchema.post('save', function(doc ,next) {
     console.log('user created and saved', doc);
     next();
 })
+
+//CUSTOM STATIC METHOD creation in User model
+//'statics' -to add new static method,we name it 'login'
+userSchema.statics.login = async function(email, password){
+    //'this' now refers to the user model(as instance unavailable)
+    //find doc in db where email matches
+    const user = await this.findOne({email})
+    if(user) {
+        //bcrypt hashes incoming pass & compares with db pass
+        const auth = await bcrypt.compare(password, user.password)
+        if(auth){
+            return user;
+        }
+        throw Error('incorrect password')//if pass not similar
+    }throw Error('incorrect email')//if user not found
+
+}
 const User = mongoose.model('user', userSchema);
 
 module.exports = User;

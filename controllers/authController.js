@@ -59,11 +59,19 @@ module.exports.signup_post = async (req, res) => {
     }
 }
 
+
 module.exports.login_get = (req, res) => {
     res.render('login');
 }
 
+//we'll use custom method from User model
 module.exports.login_post = (req, res) => {
     const { email, password } = req.body;
-    res.send('we will login later');
+    try {
+        //since user returned if login success(check method in model)
+       const user = User.login(email, password)
+       res.status(200).json({user: user._id})
+    } catch (err) {
+        res.status(400).json({})
+    }
 }
