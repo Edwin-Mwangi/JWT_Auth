@@ -9,9 +9,14 @@
   <nav>
     <h1><a href="/">Ninja Smoothies</a></h1>
     <ul>
-      <li><a href="/logout">logout</a></li>
-      <li><a href="/login">login</a></li>
-      <li><a href="/signup" class="btn">sign up</a></li>
+      <!-- accessing user in views from res.loacls -->
+      <% if (user) { %>
+        <li>Welcome <%= user.email %></li>
+        <li><a href="/logout">logout</a></li>     
+      <% } else { %>
+        <li><a href="/login">login</a></li>
+        <li><a href="/signup" class="btn">sign up</a></li>
+      <% } %>
     </ul>
   </nav>
   
