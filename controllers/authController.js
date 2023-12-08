@@ -87,3 +87,11 @@ module.exports.login_post = async (req, res) => {
         res.status(400).json({ errors })
     }
 }
+
+//handle logging out
+//want to del cookie but no option so
+//update/replace current jwt cookie with one that's blank(has no token) & very short lifespan
+module.exports.logout_get = (req, res) => {
+    res.cookie('jwt', '', { maxAge: 1} );//maxAge of 1ms
+    res.redirect("/");
+} 

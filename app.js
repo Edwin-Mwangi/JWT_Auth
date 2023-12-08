@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes')
 const cookieParser = require('cookie-parser');//3rd pary pkg to set cookies
+const { requireAuth } = require('./middleware/authMiddleware');
 
 const app = express();
 
@@ -22,7 +23,8 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true, useCr
 
 // routes
 app.get('/', (req, res) => res.render('home'));
-app.get('/smoothies', (req, res) => res.render('smoothies'));
+//using the requireAuth middleware on a route
+app.get('/smoothies', requireAuth, (req, res) => res.render('smoothies'));
 
 //COOKIES
 //setting 'em...as we are the server to send to Browser
